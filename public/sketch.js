@@ -19,6 +19,9 @@ function setup() {
   socket.on('reply', data => {
     console.log(data);
     speaker.speak(data);
+    var msg = new SpeechSynthesisUtterance();
+    msg.text = data;
+    window.speechSynthesis.speak(msg);
   });
 }
 function draw() {}
