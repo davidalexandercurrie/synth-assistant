@@ -24,7 +24,9 @@ io.on('connection', socket => {
 });
 
 let tempNoteParams = {};
-let noteParams = {};
+let noteParams = {
+  ready: false,
+};
 
 const listener = http.listen(process.env.PORT || 3000, process.env.IP, () => {
   console.log('listening on *:3000');
@@ -136,6 +138,7 @@ async function executeQueries(projectId, sessionId, queries, languageCode) {
 function cueSound() {
   noteParams.waveshape = tempNoteParams.waveshape;
   noteParams.freq = tempNoteParams.freq;
+  noteParams.ready = true;
 }
 
 app.get('/getnote', function (req, res) {
@@ -143,7 +146,9 @@ app.get('/getnote', function (req, res) {
     res.send({});
   } else {
     res.send(noteParams);
-    noteParams = {};
+    noteParams = {
+      ready: false,
+    };
   }
 });
 
