@@ -142,14 +142,10 @@ function cueSound() {
 }
 
 app.get('/getnote', function (req, res) {
-  if (_.isEmpty(noteParams)) {
-    res.send({});
-  } else {
-    res.send(noteParams);
-    noteParams = {
-      ready: false,
-    };
-  }
+  res.send(noteParams);
+  noteParams = {
+    ready: false,
+  };
 });
 
 console.log('test');
