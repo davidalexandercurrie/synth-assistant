@@ -112,10 +112,7 @@ async function executeQueries(projectId, sessionId, queries, languageCode) {
           'got waveform! ' +
             intentResponse.queryResult.parameters.fields.waveshape.stringValue
         );
-        io.to(sessionId).emit(
-          'reply',
-          intentResponse.queryResult.parameters.fields.waveshape
-        );
+
         tempNoteParams.waveshape =
           intentResponse.queryResult.parameters.fields.waveshape.stringValue;
         cueSound();
