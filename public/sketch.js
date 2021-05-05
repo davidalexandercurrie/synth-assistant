@@ -14,6 +14,7 @@ function setup() {
   getAudioContext().suspend(); //make sure audio is paused
   document.getElementById('record-button').addEventListener('click', () => {
     robot.start();
+    userStartAudio();
   });
   socket.on('reply', data => {
     console.log(data);
@@ -22,9 +23,7 @@ function setup() {
 }
 function draw() {}
 
-function mousePressed() {
-  userStartAudio();
-}
+function startAudio() {}
 
 function showResult(result) {}
 function showError(err) {
