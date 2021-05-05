@@ -4,6 +4,7 @@ const http = require('http').createServer(app);
 const options = {
   /* ... */
 };
+
 const io = require('socket.io')(http, options);
 const _ = require('lodash');
 
@@ -145,3 +146,5 @@ app.get('/getnote', function (req, res) {
     noteParams = {};
   }
 });
+
+console.log('test');
