@@ -12,6 +12,7 @@ app.use('/', express.static('public'));
 
 io.on('connection', socket => {
   console.log('a user connected');
+  tempNoteParams[socket.id] = {};
   socket.on('instruction', data => {
     const projectId = 'synth-assistant';
     const sessionId = socket.id;
@@ -27,6 +28,8 @@ let tempNoteParams = {};
 let noteParams = {
   ready: false,
 };
+let queue = [];
+let queueActive = false;
 
 const listener = http.listen(process.env.PORT || 3000, process.env.IP, () => {
   console.log('listening on *:3000');
@@ -100,7 +103,7 @@ async function executeQueries(projectId, sessionId, queries, languageCode) {
           'got frequency! ' +
             intentResponse.queryResult.parameters.fields.number.numberValue
         );
-        tempNoteParams.freq =
+        tempNoteParams[sessionId].freq =
           intentResponse.queryResult.parameters.fields.number.numberValue;
       }
       if (
@@ -113,9 +116,19 @@ async function executeQueries(projectId, sessionId, queries, languageCode) {
             intentResponse.queryResult.parameters.fields.waveshape.stringValue
         );
 
-        tempNoteParams.waveshape =
+        tempNoteParams[sessionId].waveshape =
           intentResponse.queryResult.parameters.fields.waveshape.stringValue;
-        cueSound();
+        cueSound(sessionId);
+      }
+      if (
+        intentResponse.queryResult.action == 'fastnote' &&
+        intentResponse.queryResult.allRequiredParamsPresent
+      ) {
+        tempNoteParams[sessionId].freq =
+          intentResponse.queryResult.parameters.fields.number.numberValue;
+        tempNoteParams[sessionId].waveshape =
+          intentResponse.queryResult.parameters.fields.waveshape.stringValue;
+        cueSound(sessionId);
       }
       console.log(
         `Fulfillment Text: ${intentResponse.queryResult.fulfillmentText}`
@@ -132,17 +145,37 @@ async function executeQueries(projectId, sessionId, queries, languageCode) {
   }
 }
 
-function cueSound() {
-  noteParams.waveshape = tempNoteParams.waveshape;
-  noteParams.freq = tempNoteParams.freq;
-  noteParams.ready = true;
+function cueSound(id) {
+  tempNoteParams[id].ready = true;
+  let temp = JSON.parse(JSON.stringify(tempNoteParams[id]));
+  queue.push(temp);
+  console.log(queue);
 }
 
 app.get('/getnote', function (req, res) {
+  if (!queueActive && queue.length > 0) {
+    scheduleNotes();
+  }
+
   res.send(noteParams);
+
   noteParams = {
     ready: false,
   };
 });
 
 console.log('test');
+
+function scheduleNotes() {
+  queueActive = true;
+  noteParams = queue[0];
+  queue.shift();
+  console.log(queue);
+  setTimeout(() => {
+    if (queue.length > 0) {
+      scheduleNotes();
+    } else {
+      queueActive = false;
+    }
+  }, 10000);
+}
