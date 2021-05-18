@@ -1,1 +1,16 @@
-/* No CSS *//*# sourceMappingURL=style.css.map */
+html,
+body {
+  font-family: monospace;
+  font-size: 1.5em;
+}
+
+button {
+  font-family: monospace;
+  font-size: 1.1em;
+  background: yellowgreen;
+}
+
+.active {
+  background: red;
+}
+/*# sourceMappingURL=style.css.map */

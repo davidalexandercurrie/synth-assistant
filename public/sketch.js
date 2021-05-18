@@ -12,9 +12,10 @@ function setup() {
   robot.onEnd = onVoiceRecognitionEnd; // callback function that triggers voice recognition ends
   speaker = new p5.Speech();
   getAudioContext().suspend(); //make sure audio is paused
-  document.getElementById('record-button').addEventListener('click', () => {
+  document.getElementById('record').addEventListener('click', () => {
     robot.start();
     userStartAudio();
+    document.getElementById('record').classList.add('active');
   });
   socket.on('reply', data => {
     console.log(data);
@@ -22,6 +23,7 @@ function setup() {
     var msg = new SpeechSynthesisUtterance();
     msg.text = data;
     window.speechSynthesis.speak(msg);
+    document.getElementById('result').innerText = msg.text;
   });
 }
 function draw() {}
@@ -37,4 +39,5 @@ function onVoiceRecognitionEnd() {
   if (robot.resultString != undefined) {
     socket.emit('instruction', robot.resultString);
   }
+  document.getElementById('record').classList.remove('active');
 }
